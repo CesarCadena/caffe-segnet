@@ -125,6 +125,22 @@ bool DecodeDatumNative(Datum* datum);
 bool DecodeDatum(Datum* datum, bool is_color);
 
 cv::Mat ReadImageToCVMat(const string& filename,
+    const int height, const int width, const int h_offset, const int w_offset,const int h_crop, const int w_crop,
+    const bool is_color, const bool nearest_neighbour_interp);
+    
+cv::Mat ReadImageToCVMat(const string& filename,
+    const int height, const int width, const int h_offset, const int w_offset,const int h_crop, const int w_crop, const bool is_color);
+
+cv::Mat ReadImageToCVMat(const string& filename,
+    const int height, const int width, const int h_offset, const int w_offset,const int h_crop, const int w_crop);
+
+cv::Mat ReadImageToCVMat(const string& filename,
+    const int h_offset, const int w_offset,const int h_crop, const int w_crop, const bool is_color);
+
+cv::Mat ReadImageToCVMat(const string& filename,
+    const int h_offset, const int w_offset,const int h_crop, const int w_crop);
+    
+cv::Mat ReadImageToCVMat(const string& filename,
     const int height, const int width, const bool is_color,
     const bool nearest_neighbour_interp);
 

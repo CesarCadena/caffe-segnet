@@ -210,6 +210,22 @@ TEST_F(IOTest, TestReadImageToCVMatResizedSquare) {
   EXPECT_EQ(cv_img.cols, 256);
 }
 
+TEST_F(IOTest, TestReadImageToCVMatCrop) {
+  string filename = EXAMPLES_SOURCE_DIR "images/cat.jpg";
+  cv::Mat cv_img = ReadImageToCVMat(filename, 0, 0, 200, 200);
+  EXPECT_EQ(cv_img.channels(), 3);
+  EXPECT_EQ(cv_img.rows, 200);
+  EXPECT_EQ(cv_img.cols, 200);
+}
+
+TEST_F(IOTest, TestReadImageToCVMatResizedCrop) {
+  string filename = EXAMPLES_SOURCE_DIR "images/cat.jpg";
+  cv::Mat cv_img = ReadImageToCVMat(filename, 256, 256, 20, 20, 200, 200);
+  EXPECT_EQ(cv_img.channels(), 3);
+  EXPECT_EQ(cv_img.rows, 256);
+  EXPECT_EQ(cv_img.cols, 256);
+}
+
 TEST_F(IOTest, TestReadImageToCVMatGray) {
   string filename = EXAMPLES_SOURCE_DIR "images/cat.jpg";
   const bool is_color = false;
@@ -223,6 +239,15 @@ TEST_F(IOTest, TestReadImageToCVMatResizedGray) {
   string filename = EXAMPLES_SOURCE_DIR "images/cat.jpg";
   const bool is_color = false;
   cv::Mat cv_img = ReadImageToCVMat(filename, 256, 256, is_color);
+  EXPECT_EQ(cv_img.channels(), 1);
+  EXPECT_EQ(cv_img.rows, 256);
+  EXPECT_EQ(cv_img.cols, 256);
+}
+
+TEST_F(IOTest, TestReadImageToCVMatResizedCropGray) {
+  string filename = EXAMPLES_SOURCE_DIR "images/cat.jpg";
+  const bool is_color = false;
+  cv::Mat cv_img = ReadImageToCVMat(filename, 256, 256, 20, 20, 200, 200, is_color);
   EXPECT_EQ(cv_img.channels(), 1);
   EXPECT_EQ(cv_img.rows, 256);
   EXPECT_EQ(cv_img.cols, 256);

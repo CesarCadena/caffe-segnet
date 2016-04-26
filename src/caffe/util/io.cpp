@@ -68,6 +68,37 @@ void WriteProtoToBinaryFile(const Message& proto, const char* filename) {
 }
 
 cv::Mat ReadImageToCVMat(const string& filename,
+    const int height, const int width, const int h_offset, const int w_offset, const int h_crop, const int w_crop, 
+    const bool is_color, const bool nearest_neighbour_interp) {
+  cv::Mat cv_img;
+  int cv_read_flag = (is_color ? CV_LOAD_IMAGE_COLOR :
+    CV_LOAD_IMAGE_GRAYSCALE);
+  cv::Mat cv_img_origin = cv::imread(filename, cv_read_flag);
+  if (!cv_img_origin.data) {
+    LOG(ERROR) << "Could not open or find file " << filename;
+    return cv_img_origin;
+  }
+  cv::Mat cv_img_crop;
+  
+  if (h_crop > 0 && w_crop > 0) {
+	cv::Rect roi(w_offset, h_offset, w_crop, h_crop);
+    cv_img_crop = cv_img_origin(roi);
+  } else {  
+    cv_img_crop = cv_img_origin;
+  }
+  
+  if (height > 0 && width > 0) {
+    int cv_interp_flag = nearest_neighbour_interp ? CV_INTER_NN :
+                                                    CV_INTER_LINEAR;
+    cv::resize(cv_img_crop, cv_img, cv::Size(width, height), 0, 0,
+        cv_interp_flag);
+  } else {
+    cv_img = cv_img_crop;
+  }
+  return cv_img;
+}
+
+cv::Mat ReadImageToCVMat(const string& filename,
     const int height, const int width, const bool is_color,
     const bool nearest_neighbour_interp) {
   cv::Mat cv_img;
@@ -89,9 +120,20 @@ cv::Mat ReadImageToCVMat(const string& filename,
   return cv_img;
 }
 
+
+cv::Mat ReadImageToCVMat(const string& filename,
+    const int height, const int width, const int h_offset, const int w_offset,const int h_crop, const int w_crop, const bool is_color) {
+  return ReadImageToCVMat(filename, height, width, h_offset, w_offset, h_crop, w_crop, is_color, false);
+}
+
 cv::Mat ReadImageToCVMat(const string& filename,
     const int height, const int width, const bool is_color) {
   return ReadImageToCVMat(filename, height, width, is_color, false);
+}
+
+cv::Mat ReadImageToCVMat(const string& filename,
+    const int height, const int width, const int h_offset, const int w_offset,const int h_crop, const int w_crop) {
+  return ReadImageToCVMat(filename, height, width, h_offset, w_offset, h_crop, w_crop, true);
 }
 
 cv::Mat ReadImageToCVMat(const string& filename,
@@ -100,8 +142,18 @@ cv::Mat ReadImageToCVMat(const string& filename,
 }
 
 cv::Mat ReadImageToCVMat(const string& filename,
+    const int h_offset, const int w_offset,const int h_crop, const int w_crop, const bool is_color) {
+  return ReadImageToCVMat(filename, 0, 0, h_offset, w_offset, h_crop, w_crop, is_color);
+}
+
+cv::Mat ReadImageToCVMat(const string& filename,
     const bool is_color) {
   return ReadImageToCVMat(filename, 0, 0, is_color);
+}
+
+cv::Mat ReadImageToCVMat(const string& filename,
+    const int h_offset, const int w_offset,const int h_crop, const int w_crop) {
+  return ReadImageToCVMat(filename, 0, 0, h_offset, w_offset, h_crop, w_crop, true);
 }
 
 cv::Mat ReadImageToCVMat(const string& filename) {
