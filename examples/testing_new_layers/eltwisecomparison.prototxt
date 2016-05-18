@@ -1,0 +1,26 @@
+name: "testing"
+
+input: "data"
+input_dim: 1
+input_dim: 1
+input_dim: 512
+input_dim: 256
+
+
+layer { name: "label1"  type: "EltwiseScalarComparison"  bottom: "data"  top: "label1"  eltwise_scalarcomparison_param { value: 1 }}
+
+layer { name: "label34"  type: "EltwiseScalarComparison"  bottom: "data"  top: "label34"  eltwise_scalarcomparison_param { value: 3 value: 4 } }
+
+layer { name: "label25"  type: "EltwiseScalarComparison"  bottom: "data"  top: "label25"  eltwise_scalarcomparison_param { value: 2 value: 5 } }
+
+layer {
+  name: "concat"
+  type: "Concat"
+  bottom: "label1"
+  bottom: "label34"
+  bottom: "label25"
+  top: "labels"
+}
+
+
+layer { name: "remap"  type: "RemapLabels"  bottom: "data"  top: "remap"  remap_labels_param { oldlabel: 3 newlabel: 2 oldlabel: 4 newlabel: 2 oldlabel: 2 newlabel: 3 } }

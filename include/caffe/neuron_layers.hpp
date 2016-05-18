@@ -719,6 +719,86 @@ class ThresholdLayer : public NeuronLayer<Dtype> {
   Dtype threshold_;
 };
 
+
+/**
+ * @brief Tests whether the input is equal to a scalar value: outputs 1 for inputs
+ *        equal to value; 0 otherwise.
+ */
+template <typename Dtype>
+class EltwiseScalarComparisonLayer : public NeuronLayer<Dtype> {
+ public:
+  /**
+   * @param param provides EltwiseScalarComparisonParameter eltwise_scalarcomp_param,
+   *     with EltwiseScalarComparisonLayer options:
+   *   - value \b
+   *     the scalar value @f$ v @f$ to which the input values are compared.
+   */
+  explicit EltwiseScalarComparisonLayer(const LayerParameter& param)
+      : NeuronLayer<Dtype>(param) {}
+  virtual void LayerSetUp(const vector<Blob<Dtype>*>& bottom,
+      const vector<Blob<Dtype>*>& top);
+
+  virtual inline const char* type() const { return "EltwiseScalarComparison"; }
+
+ protected:
+  /**
+   * @param bottom input Blob vector (length 1)
+   *   -# @f$ (N \times C \times H \times W) @f$
+   *      the inputs @f$ x @f$
+   * @param top output Blob vector (length 1)
+   *   -# @f$ (N \times C \times H \times W) @f$
+   *      the computed outputs @f$
+   *       y = \left\{
+   *       \begin{array}{lr}
+   *         0 & \mathrm{if} \; x \le t \\
+   *         1 & \mathrm{if} \; x == t
+   *       \end{array} \right.
+   *      @f$
+   */
+  virtual void Forward_cpu(const vector<Blob<Dtype>*>& bottom,
+      const vector<Blob<Dtype>*>& top);  
+  /// @brief Not implemented (non-differentiable function)
+  virtual void Backward_cpu(const vector<Blob<Dtype>*>& top,
+      const vector<bool>& propagate_down, const vector<Blob<Dtype>*>& bottom) {
+    NOT_IMPLEMENTED;
+  }
+
+  vector<Dtype> value_;
+};
+
+/**
+ * @brief Remap the input label map to a new label map
+ */
+template <typename Dtype>
+class RemapLabelsLayer : public NeuronLayer<Dtype> {
+ public:
+  /**
+   * @param param provides RemapLabelsParameter remap_labels_param,
+   *     with RemapLabelsLayer options:
+   *   - oldlabel \b
+   *   - newlabel \b
+   */
+  explicit RemapLabelsLayer(const LayerParameter& param)
+      : NeuronLayer<Dtype>(param) {}
+  virtual void LayerSetUp(const vector<Blob<Dtype>*>& bottom,
+      const vector<Blob<Dtype>*>& top);
+
+  virtual inline const char* type() const { return "RemapLabels"; }
+
+ protected:
+  virtual void Forward_cpu(const vector<Blob<Dtype>*>& bottom,
+      const vector<Blob<Dtype>*>& top);  
+  /// @brief Not implemented (non-differentiable function)
+  virtual void Backward_cpu(const vector<Blob<Dtype>*>& top,
+      const vector<bool>& propagate_down, const vector<Blob<Dtype>*>& bottom) {
+    NOT_IMPLEMENTED;
+  }
+
+  vector<Dtype> oldlabel_;
+  vector<Dtype> newlabel_;
+};
+
+
 /**
  * @brief Parameterized Rectified Linear Unit non-linearity @f$
  *        y_i = \max(0, x_i) + a_i \min(0, x_i)

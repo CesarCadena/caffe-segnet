@@ -269,7 +269,7 @@ message ParamSpec {
 // NOTE
 // Update the next available ID when you add a new LayerParameter field.
 //
-// LayerParameter next available layer-specific ID: 139 (last added: dense_image_data_param)
+// LayerParameter next available layer-specific ID: 141 (last added: remap_labels_param)
 message LayerParameter {
   optional string name = 1; // the layer name
   optional string type = 2; // the layer type
@@ -306,6 +306,8 @@ message LayerParameter {
 
   // Parameters for data pre-processing.
   optional TransformationParameter transform_param = 100;
+  optional ElementWiseScalarComparisonParameter eltwise_scalarcomparison_param = 139;
+  optional RemapLabelsParameter remap_labels_param = 140;
 
   // Parameters shared by loss layers.
   optional LossParameter loss_param = 101;
@@ -377,6 +379,16 @@ message TransformationParameter {
   optional bool force_color = 6 [default = false];
   // Force the decoded image to have 1 color channels.
   optional bool force_gray = 7 [default = false];
+}
+
+// Message that stores values for element wise comparison with scalars
+message ElementWiseScalarComparisonParameter {
+  repeated float value = 1; // Strictly positive values
+}
+// Message that remap labels values
+message RemapLabelsParameter {
+  repeated float oldlabel = 1; // Strictly positive values
+  repeated float newlabel = 2; // Strictly positive values
 }
 
 // Message that stores parameters shared by loss layers
@@ -633,6 +645,8 @@ message ImageDataParameter {
   // It will also resize images if new_height or new_width are not zero.
   optional uint32 new_height = 9 [default = 0];
   optional uint32 new_width = 10 [default = 0];
+  // nearest_neighbor interpolation method for resizing.
+  optional bool nn_interp = 17 [default = true];
   // specify the roi.
   optional uint32 h_offset = 13 [default = 0];
   optional uint32 w_offset = 14 [default = 0];

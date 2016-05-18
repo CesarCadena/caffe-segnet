@@ -30,6 +30,7 @@ void ImageDataLayer<Dtype>::DataLayerSetUp(const vector<Blob<Dtype>*>& bottom,
   const int h_crop = this->layer_param_.image_data_param().h_crop();
   const int w_crop = this->layer_param_.image_data_param().w_crop();
   const bool is_color  = this->layer_param_.image_data_param().is_color();
+  const bool nn_interp  = this->layer_param_.image_data_param().nn_interp();
   string root_folder = this->layer_param_.image_data_param().root_folder();
 
   CHECK((new_height == 0 && new_width == 0) ||
@@ -70,7 +71,7 @@ void ImageDataLayer<Dtype>::DataLayerSetUp(const vector<Blob<Dtype>*>& bottom,
   //cv::Mat cv_img = ReadImageToCVMat(root_folder + lines_[lines_id_].first,
   //                                  new_height, new_width, is_color);
   cv::Mat cv_img = ReadImageToCVMat(root_folder + lines_[lines_id_].first,
-                                    new_height, new_width, h_offset, w_offset, h_crop, w_crop, is_color);
+                                    new_height, new_width, h_offset, w_offset, h_crop, w_crop, is_color, nn_interp);
   // Use data_transformer to infer the expected blob shape from a cv_image.
   vector<int> top_shape = this->data_transformer_->InferBlobShape(cv_img);
   this->transformed_data_.Reshape(top_shape);
@@ -115,6 +116,7 @@ void ImageDataLayer<Dtype>::InternalThreadEntry() {
   const int h_crop = image_data_param.h_crop();
   const int w_crop = image_data_param.w_crop();  
   const bool is_color = image_data_param.is_color();
+  const bool nn_interp  = image_data_param.nn_interp();
   string root_folder = image_data_param.root_folder();
 
   // Reshape according to the first image of each batch
@@ -142,7 +144,7 @@ void ImageDataLayer<Dtype>::InternalThreadEntry() {
     //cv::Mat cv_img = ReadImageToCVMat(root_folder + lines_[lines_id_].first,
     //    new_height, new_width, is_color);
     cv::Mat cv_img = ReadImageToCVMat(root_folder + lines_[lines_id_].first,
-        new_height, new_width, h_offset, w_offset, h_crop, w_crop, is_color);
+        new_height, new_width, h_offset, w_offset, h_crop, w_crop, is_color, nn_interp);
     CHECK(cv_img.data) << "Could not load " << lines_[lines_id_].first;
     read_time += timer.MicroSeconds();
     timer.Start();
